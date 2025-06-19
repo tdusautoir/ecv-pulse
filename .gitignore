@@ -1,0 +1,10 @@
+**/*.DS_Store
+
+# Dependencies and AdonisJS build
+node_modules
+
+# Secrets
+.env
+.env.local
+.env.production.local
+.env.development.local
