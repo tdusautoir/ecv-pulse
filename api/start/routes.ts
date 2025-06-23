@@ -25,6 +25,11 @@ router
       .resource('/transactions', '#controllers/transactions_controller')
       .apiOnly()
       .except(['destroy', 'update'])
+
+    router
+      .resource('/contacts', '#controllers/contacts_controller')
+      .apiOnly()
+      .except(['destroy', 'update'])
   })
   .use(middleware.auth())
   .prefix('/me')

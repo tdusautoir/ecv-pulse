@@ -36,11 +36,8 @@ export async function createP2PTransaction(
     throw new Exception('insufficient_funds', { status: 400 })
   }
 
-  sender.balance -= amount
-  receiver.balance += amount
-
-  await sender.save()
-  await receiver.save()
+  await User.query({ client: trx }).where('id', sender.id).decrement('balance', amount)
+  await User.query({ client: trx }).where('id', receiver.id).increment('balance', amount)
 
   const commonDetails = {
     senderId: sender.id,

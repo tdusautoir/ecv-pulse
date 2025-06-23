@@ -1,6 +1,6 @@
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
-import { registerUserValidator } from '#validators/users'
+import { loginUserValidator, registerUserValidator } from '#validators/users'
 import { registerFakeCICUser } from '../utils/users.js'
 
 export default class AuthController {
@@ -17,8 +17,13 @@ export default class AuthController {
    * Log a user in
    */
   async login({ request }: HttpContext) {
-    const { email, password } = request.only(['email', 'password'])
-    const user = await User.verifyCredentials(email, password)
+    const payload = await loginUserValidator.validate(request.all())
+
+    const user = await User.verifyCredentials(
+      (payload.email || payload.phoneNumber) as string,
+      payload.password
+    )
+
     const token = await User.accessTokens.create(user)
 
     return {

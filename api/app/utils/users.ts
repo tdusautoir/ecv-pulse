@@ -5,6 +5,12 @@ import Transaction, { TransactionStatus, TransactionType } from '#models/transac
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
 
+/**
+ * Registers a fake CIC user and generates random data for them.
+ *
+ * @param payload - The user registration payload.
+ * @returns The created user.
+ */
 export async function registerFakeCICUser(payload: InferInput<typeof registerUserValidator>) {
   const user = await User.create({
     ...payload,
