@@ -8,14 +8,6 @@ export default class extends BaseSchema {
       table.uuid('id').primary()
 
       table
-        .integer('user_id')
-        .unsigned()
-        .references('id')
-        .inTable('users')
-        .onDelete('CASCADE')
-        .notNullable()
-
-      table
         .integer('sender_id')
         .unsigned()
         .references('id')

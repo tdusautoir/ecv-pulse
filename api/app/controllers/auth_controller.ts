@@ -1,6 +1,7 @@
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import { registerUserValidator } from '#validators/users'
+import { registerFakeCICUser } from '../utils/users.js'
 
 export default class AuthController {
   /**
@@ -8,7 +9,7 @@ export default class AuthController {
    */
   async register({ request, response }: HttpContext) {
     const payload = await registerUserValidator.validate(request.all())
-    const user = await User.create(payload)
+    const user = await registerFakeCICUser(payload)
     return response.created(user)
   }
 

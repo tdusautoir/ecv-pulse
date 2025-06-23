@@ -11,9 +11,11 @@ export default class TransactionsController {
    */
   async index({ auth }: HttpContext) {
     const user = auth.user!
-    await user.load('transactions')
+    const transactions = await Transaction.query()
+      .where('senderId', user.id)
+      .orWhere('receiverId', user.id)
 
-    return user.transactions
+    return transactions
   }
 
   /**

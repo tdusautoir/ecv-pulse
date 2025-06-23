@@ -2,6 +2,7 @@ import User from '#models/user'
 import Transaction from '#models/transaction'
 import { Exception } from '@adonisjs/core/exceptions'
 import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
+import { randomUUID } from 'node:crypto'
 
 type P2PTransactionPayload = {
   senderId: number
@@ -51,12 +52,10 @@ export async function createP2PTransaction(
     message: message,
   }
 
-  const senderTransaction = await Transaction.create(
-    { ...commonDetails, userId: sender.id },
+  const transaction = await Transaction.create(
+    { id: randomUUID(), ...commonDetails },
     { client: trx }
   )
 
-  await Transaction.create({ ...commonDetails, userId: receiver.id }, { client: trx })
-
-  return senderTransaction
+  return transaction
 }
