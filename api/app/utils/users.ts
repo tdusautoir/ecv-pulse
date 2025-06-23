@@ -15,8 +15,6 @@ export async function registerFakeCICUser(payload: InferInput<typeof registerUse
   const user = await User.create({
     ...payload,
     balance: Math.round((Math.random() * (10000 - 1000) + 1000) * 100) / 100,
-    level: Math.floor(Math.random() * 11),
-    xp: Math.floor(Math.random() * 1001),
   })
 
   const accounts = await User.query().whereNot('id', user.id).limit(5)

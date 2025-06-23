@@ -30,6 +30,14 @@ router
       .resource('/contacts', '#controllers/contacts_controller')
       .apiOnly()
       .except(['destroy', 'update'])
+
+    router.resource('/savings-objectives', '#controllers/savings_objectives_controller').apiOnly()
+    router
+      .group(() => {
+        router.post('/:id/add', '#controllers/savings_objectives_controller.addToSavings')
+        router.post('/:id/remove', '#controllers/savings_objectives_controller.removeFromSavings')
+      })
+      .prefix('/savings-objectives')
   })
   .use(middleware.auth())
   .prefix('/me')

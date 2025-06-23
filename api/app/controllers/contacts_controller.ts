@@ -72,7 +72,7 @@ export default class ContactsController {
       isFavorite: payload.isFavorite || false,
     })
 
-    await contact.load('user', (query) => {
+    await contact.load('contactUser', (query) => {
       query.select('id', 'fullName', 'email', 'avatarUrl')
     })
 

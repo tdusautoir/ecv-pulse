@@ -24,7 +24,9 @@ export default class extends BaseSchema {
 
       table.decimal('amount', 14, 2).notNullable()
 
-      table.enum('type', ['p2p', 'group', 'subscription', 'deposit', 'withdrawal']).notNullable()
+      table
+        .enum('type', ['p2p', 'group', 'subscription', 'deposit', 'withdrawal', 'saving'])
+        .notNullable()
       table.enum('status', ['pending', 'completed', 'failed', 'cancelled']).notNullable()
 
       table.text('description').nullable()

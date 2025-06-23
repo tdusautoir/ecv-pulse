@@ -7,7 +7,7 @@ import { Exception } from '@adonisjs/core/exceptions'
 
 export default class TransactionsController {
   /**
-   * Display a list of resource
+   * Display a list of user's transactions
    */
   async index({ auth }: HttpContext) {
     const user = auth.user!
@@ -19,7 +19,7 @@ export default class TransactionsController {
   }
 
   /**
-   * Handle form submission for the create action
+   * Add a new transaction
    */
   async store({ request, response, auth }: HttpContext) {
     const sender = auth.user!
@@ -54,7 +54,7 @@ export default class TransactionsController {
   }
 
   /**
-   * Show individual record
+   * Show individual transaction
    */
   async show({ params, auth }: HttpContext) {
     const user = auth.user!

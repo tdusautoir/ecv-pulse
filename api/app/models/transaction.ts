@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 
-export type TransactionType = 'p2p' | 'group' | 'subscription' | 'deposit' | 'withdrawal'
+export type TransactionType = 'p2p' | 'group' | 'subscription' | 'deposit' | 'withdrawal' | 'saving'
 export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'cancelled'
 
 export default class Transaction extends BaseModel {
