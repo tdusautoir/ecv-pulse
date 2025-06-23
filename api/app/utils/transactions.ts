@@ -1,0 +1,62 @@
+import User from '#models/user'
+import Transaction from '#models/transaction'
+import { Exception } from '@adonisjs/core/exceptions'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
+
+type P2PTransactionPayload = {
+  senderId: number
+  receiverId: number
+  amount: number
+  description?: string | null
+  message?: string | null
+}
+
+/**
+ * Executes a peer-to-peer (P2P) transaction between two users.
+ * This function must be called within a database transaction.
+ *
+ * @param payload The transaction details.
+ * @param trx The database transaction client.
+ * @returns The created transaction record for the sender.
+ */
+export async function createP2PTransaction(
+  payload: P2PTransactionPayload,
+  trx: TransactionClientContract
+) {
+  const { senderId, receiverId, amount, description, message } = payload
+
+  const sender = await User.query({ client: trx }).forUpdate().where('id', senderId).firstOrFail()
+  const receiver = await User.query({ client: trx })
+    .forUpdate()
+    .where('id', receiverId)
+    .firstOrFail()
+
+  if (sender.balance < amount) {
+    throw new Exception('insufficient_funds', { status: 400 })
+  }
+
+  sender.balance -= amount
+  receiver.balance += amount
+
+  await sender.save()
+  await receiver.save()
+
+  const commonDetails = {
+    senderId: sender.id,
+    receiverId: receiver.id,
+    amount: amount,
+    type: 'p2p' as const,
+    status: 'completed' as const,
+    description: description,
+    message: message,
+  }
+
+  const senderTransaction = await Transaction.create(
+    { ...commonDetails, userId: sender.id },
+    { client: trx }
+  )
+
+  await Transaction.create({ ...commonDetails, userId: receiver.id }, { client: trx })
+
+  return senderTransaction
+}

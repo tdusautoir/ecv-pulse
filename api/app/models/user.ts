@@ -46,5 +46,5 @@ export default class User extends compose(BaseModel, AuthFinder) {
   static accessTokens = DbAccessTokensProvider.forModel(User)
 
   @hasMany(() => Transaction)
-  declare posts: HasMany<typeof Transaction>
+  declare transactions: HasMany<typeof Transaction>
 }

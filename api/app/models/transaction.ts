@@ -14,10 +14,10 @@ export default class Transaction extends BaseModel {
   declare userId: number
 
   @column()
-  declare senderId: string | null
+  declare senderId: number | null
 
   @column()
-  declare receiverId: string | null
+  declare receiverId: number | null
 
   @column()
   declare amount: number

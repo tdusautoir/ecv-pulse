@@ -10,6 +10,10 @@ export default class extends BaseSchema {
       table.string('email', 254).notNullable().unique()
       table.string('password').notNullable()
 
+      table.decimal('balance', 15, 2).notNullable().defaultTo(0)
+      table.integer('level').notNullable().defaultTo(0)
+      table.integer('xp').notNullable().defaultTo(0)
+
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })

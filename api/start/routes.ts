@@ -21,7 +21,10 @@ router.post('/login', '#controllers/auth_controller.login')
 
 router
   .group(() => {
-    router.resource('/transactions', '#controllers/transactions_controller').apiOnly()
+    router
+      .resource('/transactions', '#controllers/transactions_controller')
+      .apiOnly()
+      .except(['destroy', 'update'])
   })
   .use(middleware.auth())
   .prefix('/me')
