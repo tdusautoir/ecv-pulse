@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   app:
+    container_name: app
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
@@ -16,8 +17,11 @@ services:
       - "8081:8081"
     depends_on:
       - db
+    networks:
+      - pulse
 
   db:
+    container_name: db
     image: postgres:16
     restart: unless-stopped
     volumes:
@@ -28,6 +32,12 @@ services:
       POSTGRES_DB: pulse_dev
     ports:
       - "5432:5432"
+    networks:
+      - pulse
 
 volumes:
   postgres-data:
+
+
+networks:
+  pulse:
