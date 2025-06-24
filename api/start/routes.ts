@@ -21,16 +21,22 @@ router.post('/login', '#controllers/auth_controller.login')
 
 router
   .group(() => {
+    // transactions routes
+    router
+      .group(() => {
+        router.get('/by-category', '#controllers/transactions_controller.getTransactionsByCategory')
+        router.get('categories', '#controllers/transactions_controller.getCategories')
+      })
+      .prefix('/transactions')
     router
       .resource('/transactions', '#controllers/transactions_controller')
       .apiOnly()
       .except(['destroy', 'update'])
 
-    router
-      .resource('/contacts', '#controllers/contacts_controller')
-      .apiOnly()
-      .except(['destroy', 'update'])
+    // contacts routes
+    router.resource('/contacts', '#controllers/contacts_controller').apiOnly()
 
+    // savings objectives routes
     router.resource('/savings-objectives', '#controllers/savings_objectives_controller').apiOnly()
     router
       .group(() => {

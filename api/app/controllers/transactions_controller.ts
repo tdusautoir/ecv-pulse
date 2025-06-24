@@ -4,6 +4,7 @@ import { createP2PTransactionValidator } from '../validators/transactions.js'
 import db from '@adonisjs/lucid/services/db'
 import { createP2PTransaction } from '../utils/transactions.js'
 import { Exception } from '@adonisjs/core/exceptions'
+import { DateTime } from 'luxon'
 
 export default class TransactionsController {
   /**
@@ -61,9 +62,82 @@ export default class TransactionsController {
 
     const transaction = await Transaction.query()
       .where('id', params.id)
-      .andWhere('userId', user.id)
+      .andWhere('senderId', user.id)
+      .orWhere('receiverId', user.id)
       .firstOrFail()
 
     return transaction
+  }
+
+  /**
+   * Get transactions grouped by category for the current month
+   */
+  async getTransactionsByCategory({ auth, request, response }: HttpContext) {
+    const user = auth.user!
+    const month = request.input('month', DateTime.now().toFormat('yyyy-MM'))
+
+    if (month === undefined) response.badRequest()
+
+    const startOfMonth = DateTime.fromFormat(month, 'yyyy-MM').startOf('month')
+    const endOfMonth = DateTime.fromFormat(month, 'yyyy-MM').endOf('month')
+
+    const transactions = await Transaction.query()
+      .where('senderId', user.id)
+      .andWhereNotNull('category')
+      .andWhereBetween('createdAt', [startOfMonth.toSQL()!, endOfMonth.toSQL()!])
+      .orderBy('createdAt', 'desc')
+
+    // Group by category and calculate totals
+    const groupedTransactions = transactions.reduce(
+      (acc, transaction) => {
+        const category = transaction.category || 'other'
+        if (!acc[category]) {
+          acc[category] = {
+            category,
+            total: 0,
+            count: 0,
+            transactions: [],
+          }
+        }
+
+        acc[category].total =
+          Number.parseFloat(acc[category].total.toString()) +
+          Number.parseFloat(transaction.amount.toString())
+        acc[category].count += 1
+        acc[category].transactions.push(transaction)
+
+        return acc
+      },
+      {} as Record<string, { category: string; total: number; count: number; transactions: any[] }>
+    )
+
+    // Convert to array and sort by total
+    const result = Object.values(groupedTransactions).sort((a, b) => b.total - a.total)
+
+    return {
+      month,
+      totalSpent: result.reduce((sum, group) => sum + group.total, 0),
+      categories: result,
+    }
+  }
+
+  /**
+   * Get all available categories
+   */
+  async getCategories() {
+    const categories = [
+      { id: 'shopping', name: 'Shopping', icon: '🛍️' },
+      { id: 'video_games', name: 'Video Games', icon: '🎮' },
+      { id: 'food', name: 'Food & Restaurants', icon: '🍕' },
+      { id: 'bar', name: 'Bars & Nightlife', icon: '🍺' },
+      { id: 'transport', name: 'Transport', icon: '🚇' },
+      { id: 'entertainment', name: 'Entertainment', icon: '🎬' },
+      { id: 'health', name: 'Health & Fitness', icon: '💊' },
+      { id: 'education', name: 'Education', icon: '📚' },
+      { id: 'utilities', name: 'Utilities', icon: '⚡' },
+      { id: 'other', name: 'Other', icon: '📦' },
+    ]
+
+    return categories
   }
 }

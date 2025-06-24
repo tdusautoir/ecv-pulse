@@ -3,6 +3,17 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export type TransactionType = 'p2p' | 'group' | 'subscription' | 'deposit' | 'withdrawal' | 'saving'
 export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'cancelled'
+export type TransactionCategory =
+  | 'shopping'
+  | 'video_games'
+  | 'food'
+  | 'bar'
+  | 'transport'
+  | 'entertainment'
+  | 'health'
+  | 'education'
+  | 'utilities'
+  | 'other'
 
 export default class Transaction extends BaseModel {
   @column({ isPrimary: true })
@@ -19,6 +30,9 @@ export default class Transaction extends BaseModel {
 
   @column()
   declare type: TransactionType
+
+  @column()
+  declare category: TransactionCategory | null
 
   @column()
   declare status: TransactionStatus

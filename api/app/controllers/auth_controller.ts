@@ -1,7 +1,7 @@
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import { loginUserValidator, registerUserValidator } from '#validators/users'
-import { registerFakeCICUser } from '../utils/users.js'
+import { registerFakeCICUser } from '#utils/fakers/users'
 
 export default class AuthController {
   /**
