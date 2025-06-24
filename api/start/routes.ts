@@ -44,6 +44,14 @@ router
         router.post('/:id/remove', '#controllers/savings_objectives_controller.removeFromSavings')
       })
       .prefix('/savings-objectives')
+
+    // budgets routes
+    router.resource('/budget', '#controllers/budget_controller').apiOnly()
+    router
+      .group(() => {
+        router.patch('/categories/:categoryId', '#controllers/budgets_controller.updateCategory')
+      })
+      .prefix('/budget')
   })
   .use(middleware.auth())
   .prefix('/me')

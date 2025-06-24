@@ -21,7 +21,12 @@ export default class SavingsObjectivesController {
       .where('userId', user.id)
       .orderBy('createdAt', 'desc')
 
-    return objectives
+    return objectives.map((objective) => ({
+      ...objective.$attributes,
+      completed: objective.isCompleted,
+      remainingAmount: objective.remainingAmount,
+      progressPercentage: objective.progressPercentage,
+    }))
   }
 
   /**
