@@ -21,6 +21,8 @@ router.post('/login', '#controllers/auth_controller.login')
 
 router
   .group(() => {
+    router.get('/', '#controllers/auth_controller.me')
+
     // transactions routes
     router
       .group(() => {

@@ -9,7 +9,12 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-navigation/elements": "^2.5.2",
+    "@rn-primitives/label": "^1.2.0",
     "@rn-primitives/slot": "^1.2.0",
+    "@tanstack/react-query": "^5.81.2",
+    "@tanstack/react-query-devtools": "^5.81.2",
+    "axios": "^1.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "expo": "~53.0.12",
@@ -17,6 +22,7 @@
     "expo-linking": "~7.1.5",
     "expo-navigation-bar": "~4.2.6",
     "expo-router": "~5.1.0",
+    "expo-secure-store": "^14.2.3",
     "expo-status-bar": "~2.2.3",
     "lucide-react-native": "^0.522.0",
     "nativewind": "^4.1.23",

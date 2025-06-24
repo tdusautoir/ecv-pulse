@@ -31,4 +31,32 @@ export default class AuthController {
       value: token.value!.release(),
     }
   }
+
+  /**
+   * Get current user information
+   */
+  async me({ auth }: HttpContext) {
+    const user = auth.user!
+
+    // Get additional user statistics
+    const currentMonthSpent = await user.getCurrentMonthSpent()
+    const spendingByCategory = await user.getCurrentMonthSpendingByCategory()
+
+    return {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      balance: user.balance,
+      level: user.level,
+      xp: user.xp,
+      avatarUrl: user.avatarUrl,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      stats: {
+        currentMonthSpent,
+        spendingByCategory,
+      },
+    }
+  }
 }
