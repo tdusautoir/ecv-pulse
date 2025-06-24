@@ -11,6 +11,8 @@
   "dependencies": {
     "@react-navigation/elements": "^2.5.2",
     "@rn-primitives/label": "^1.2.0",
+    "@rn-primitives/progress": "^1.2.0",
+    "@rn-primitives/separator": "^1.2.0",
     "@rn-primitives/slot": "^1.2.0",
     "@tanstack/react-query": "^5.81.2",
     "@tanstack/react-query-devtools": "^5.81.2",
@@ -19,6 +21,7 @@
     "clsx": "^2.1.1",
     "expo": "~53.0.12",
     "expo-constants": "~17.1.6",
+    "expo-linear-gradient": "~14.1.5",
     "expo-linking": "~7.1.5",
     "expo-navigation-bar": "~4.2.6",
     "expo-router": "~5.1.0",

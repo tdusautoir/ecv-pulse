@@ -2,10 +2,11 @@ import { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import apiClient from "@/constants/api-client";
 import { TOKEN_KEY } from "@/constants/auth";
+import { useQuery } from "@tanstack/react-query";
 
 type User = {
     id: number;
-    fullName: string | null;
+    fullName: String;
     email: string;
     phoneNumber: string;
     balance: number;
@@ -41,22 +42,16 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
 
-    const loadUser = async () => {
-        try {
+    const loadUser = useQuery({
+        queryFn: async () => {
             const response = await apiClient.get('/me');
             setUser(response.data);
-        } catch (error) {
-            await logout()
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        loadUser()
-    }, [])
+            return response;
+        },
+        queryKey: ['profile'],
+        retry: false
+    })
 
     const login = async (email: string, password: string) => {
         try {
@@ -67,7 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             const { value } = response.data;
             await SecureStore.setItemAsync(TOKEN_KEY, value);
-            await loadUser();
+            await loadUser.refetch();
         } catch (error) {
             console.error('Login error:', error);
             throw error;
@@ -95,7 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const value: AuthProps = {
         user,
-        isLoading,
+        isLoading: loadUser.isLoading,
         login,
         logout,
         register,

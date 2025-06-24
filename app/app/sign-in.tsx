@@ -32,42 +32,44 @@ export default function Login() {
     });
 
     return (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <ScrollView>
-                <View className="flex flex-col gap-8 items-center p-8">
-                    <Logo />
-                    <View className="flex-col gap-4 items-center">
-                        <H1>Bienvenue 👋</H1>
-                        <P className="text-xl text-center px-5">Connecte-toi avec tes identifiants CIC pour accéder à ton espace Pulse</P>
+        <SafeAreaView style={{ flex: 1 }} className="bg-background">
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <ScrollView>
+                    <View className="flex flex-col gap-8 items-center p-8">
+                        <Logo width={131} height={39} />
+                        <View className="flex-col gap-4 items-center">
+                            <H1>Bienvenue 👋</H1>
+                            <P className="text-xl text-center px-5">Connecte-toi avec tes identifiants CIC pour accéder à ton espace Pulse</P>
+                        </View>
+                        <Card className="w-full flex-col gap-8">
+                            {isError && (
+                                <Alert icon={CircleXIcon} variant='destructive'>
+                                    <AlertTitle>Connexion impossible</AlertTitle>
+                                    <AlertDescription>
+                                        Les informations saisies sont incorrectes. Veuillez vérifier votre email et votre mot de passe puis réessayer.
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+                            <View>
+                                <Label className="mb-4 font-bold">Téléphone ou email</Label>
+                                <Input onChangeText={setEmail} placeholder="ton.email@example.com" className="bg-white px-6 native:h-16 " />
+                            </View>
+                            <View>
+                                <Label className="mb-4 font-bold">Password</Label>
+                                <Input onChangeText={setPassword} secureTextEntry={true} placeholder="••••••••••" className="bg-white px-6 native:h-16" />
+                            </View>
+                            {isSuccess && (<Alert icon={CircleXIcon} variant='success'>
+                                <AlertDescription>Connexion réussie</AlertDescription>
+                            </Alert>)}
+                            <LoadingButton size='lg' loading={isPending} onPress={() => mutate()} >
+                                <Text className="font-bold">Se connecter</Text>
+                            </LoadingButton>
+                        </Card>
                     </View>
-                    <Card className="w-full flex-col gap-8">
-                        <View>
-                            <Label className="mb-4 font-bold">Téléphone ou email</Label>
-                            <Input onChangeText={setEmail} placeholder="ton.email@example.com" className="bg-white px-6 native:h-16 " />
-                        </View>
-                        <View>
-                            <Label className="mb-4 font-bold">Password</Label>
-                            <Input onChangeText={setPassword} secureTextEntry={true} placeholder="••••••••••" className="bg-white px-6 native:h-16" />
-                        </View>
-                        {isError && (
-                            <Alert icon={CircleXIcon} variant='destructive'>
-                                <AlertTitle>Connexion impossible</AlertTitle>
-                                <AlertDescription>
-                                    Les informations saisies sont incorrectes. Veuillez vérifier votre email et votre mot de passe puis réessayer.
-                                </AlertDescription>
-                            </Alert>
-                        )}
-                        {isSuccess && (<Alert icon={CircleXIcon} variant='success'>
-                            <AlertDescription>Connexion réussie</AlertDescription>
-                        </Alert>)}
-                        <LoadingButton size='lg' loading={isPending} onPress={() => mutate()} >
-                            <Text className="font-bold">Se connecter</Text>
-                        </LoadingButton>
-                    </Card>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }

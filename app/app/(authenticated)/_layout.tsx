@@ -14,6 +14,8 @@ export default function LoggedInLayout() {
     }
 
     return (
-        <Stack screenOptions={{ headerShown: false }} />
+        <SafeAreaView style={{ flex: 1 }} className="bg-background">
+            <Stack screenOptions={{ headerShown: false }} />
+        </SafeAreaView>
     );
 }

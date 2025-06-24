@@ -10,10 +10,8 @@ export default function RootLayout() {
     return (
         <QueryClientProvider client={queryClient}>
             <AuthProvider>
-                <SafeAreaView style={{ flex: 1 }} className="bg-background">
-                    <Slot />
-                    <StatusBar barStyle='dark-content' />
-                </SafeAreaView>
+                <Slot />
+                <StatusBar barStyle='dark-content' />
             </AuthProvider>
         </QueryClientProvider>
     );
