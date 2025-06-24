@@ -1,11 +1,15 @@
-import { View, Text } from "react-native";
-import { StatusBar } from 'expo-status-bar';
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import "./global.css"
+import { View } from "react-native";
 
-export default function Index() {
+export default function App() {
     return (
-        <View>
-            <Text style={{ color: 'white' }}>Pulse !</Text>
-            <StatusBar style="auto" />
+        <View className="flex-1 items-center justify-center bg-white">
+            <Text className="text-xl font-bold text-blue-500">
+                Welcome to Nativewind!
+            </Text>
+            <Button size={'sm'} variant='default'><Text>Test RNR</Text></Button>
         </View>
     );
-}   
+}

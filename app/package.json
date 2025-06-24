@@ -9,19 +9,31 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@rn-primitives/slot": "^1.2.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "expo": "~53.0.12",
     "expo-constants": "~17.1.6",
     "expo-linking": "~7.1.5",
+    "expo-navigation-bar": "~4.2.6",
     "expo-router": "~5.1.0",
     "expo-status-bar": "~2.2.3",
+    "lucide-react-native": "^0.522.0",
+    "nativewind": "^4.1.23",
     "react": "19.0.0",
     "react-native": "0.79.4",
+    "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "~4.11.1"
+    "react-native-screens": "~4.11.1",
+    "react-native-svg": "15.11.2",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
+    "prettier-plugin-tailwindcss": "^0.5.11",
+    "tailwindcss": "^3.4.17",
     "typescript": "~5.8.3"
   },
   "private": true
