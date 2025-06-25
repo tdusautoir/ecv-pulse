@@ -9,6 +9,7 @@ import { StarIcon, TrendingUpIcon } from "lucide-react-native";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import Transactions from "../../components/dashboard/transactions";
+import QuickActions from "../../components/dashboard/quick-actions";
 import colors from "@/constants/colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -73,6 +74,7 @@ export default function Dashboard() {
                     </LinearGradient>
                 </View>
                 <View className="flex flex-col gap-8 px-6 w-full">
+                    <QuickActions />
                     <Transactions />
                     <Button variant='destructive' onPress={() => logout()}>
                         <Text className="">Deconnexion</Text>
