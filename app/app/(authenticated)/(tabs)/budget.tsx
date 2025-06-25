@@ -228,7 +228,7 @@ export default function BudgetScreen() {
                             <CardTitle>Résumé du mois</CardTitle>
                             <CardDescription>
                                 {budget.isExceeded
-                                    ? `Vous avez dépassé votre budget de ${formatCurrency(Math.abs(budget.remainingAmount))}`
+                                    ? `Vous avez dépassé votre budget de ${formatCurrency(Number(budget.totalSpent) - Number(budget.totalAmount))}`
                                     : `Il vous reste ${formatCurrency(budget.remainingAmount)} ce mois`
                                 }
                             </CardDescription>
