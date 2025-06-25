@@ -1,6 +1,6 @@
 import { Button, LoadingButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { H1, H3, H4, P } from "@/components/ui/typography";
+import { H1, H2, H3, H4, P } from "@/components/ui/typography";
 import { useState, useRef } from "react";
 import { Text, View, KeyboardAvoidingView, Platform } from "react-native";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -16,26 +16,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
 import colors from "@/constants/colors";
 import { getObjectiveEmoji } from "@/lib/savings-utils";
-
-type SavingsObjective = {
-  id: number;
-  name: string;
-  targetAmount: number;
-  currentAmount: number;
-  targetDate: string | null;
-  description: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  completed: boolean;
-  remainingAmount: number;
-  progressPercentage: number;
-};
+import { Card } from "@/components/ui/card";
 
 export default function SaveMoneyScreen() {
   const [amount, setAmount] = useState<string>('');
   const [message, setMessage] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<boolean>(false);
   const disabled = amount.trim() === '';
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -46,9 +32,8 @@ export default function SaveMoneyScreen() {
 
   const objectiveId = Number(params.id);
 
-  // Récupérer les données de l'objectif depuis l'API
   const { data: objective, isPending } = useQuery<SavingsObjective>({
-    queryKey: ['savings-objective', objectiveId],
+    queryKey: ['savings-objectives', objectiveId],
     queryFn: async () => {
       const response = await api.get(`/me/savings-objectives/${objectiveId}`);
       return response.data;
@@ -84,31 +69,17 @@ export default function SaveMoneyScreen() {
       if (amount.trim() === '' || !objective) throw new Error();
 
       const amountValue = parseFloat(amount);
-
-      // Vérifier si l'utilisateur a suffisamment de fonds
-      if (user && user.balance < amountValue) {
-        throw new Error('Fonds insuffisants');
-      }
-
       await api.post(`/me/savings-objectives/${objective.id}/add`, {
         amount: amountValue,
         message: message.trim() !== '' ? message : undefined,
       })
 
       queryClient.invalidateQueries({ queryKey: ['profile'] })
-      queryClient.invalidateQueries({ queryKey: ['savings-objectives'] })
-      queryClient.invalidateQueries({ queryKey: ['savings-objective', objectiveId] })
       await queryClient.refetchQueries({ queryKey: ['savings-objectives'] })
     },
     onSuccess: () => router.back(),
-    onError: (error: any) => {
-      if (error.message === 'Fonds insuffisants') {
-        setError('Vous n\'avez pas suffisamment de fonds pour effectuer cette opération.');
-      } else {
-        setError('Une erreur est survenue lors de l\'épargne. Veuillez réessayer.');
-      }
-    },
-    onMutate: () => setError('')
+    onError: () => setError(true),
+    onMutate: () => setError(false)
   })
 
   const amountValue = parseFloat(amount) || 0;
@@ -138,16 +109,14 @@ export default function SaveMoneyScreen() {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="bg-gray-50"
-    >
+      className="bg-gray-50">
       <ScrollView
         ref={scrollViewRef}
         style={{ flex: 1 }}
         className="bg-gray-50"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
+        contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex flex-col">
           <View className="relative rounded-b-3xl overflow-hidden">
             <LinearGradient
@@ -172,17 +141,14 @@ export default function SaveMoneyScreen() {
               </View>
             </LinearGradient>
           </View>
-
           <View className="p-6 space-y-6 pb-20">
             {error && (
               <Alert variant="destructive" icon={CircleXIcon} className="mb-6">
                 <AlertTitle>Erreur</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>Une erreur est survenue lors de l’ajout à l’objectif. Veuillez réessayer.</AlertDescription>
               </Alert>
             )}
-
-            {/* Informations sur l'objectif */}
-            <View className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+            <Card className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
               <View className="flex flex-row items-center gap-4 mb-4">
                 <Text className="text-4xl">{getObjectiveEmoji(objective.name)}</Text>
                 <H3 className="text-xl font-bold text-gray-900">{objective.name}</H3>
@@ -196,12 +162,12 @@ export default function SaveMoneyScreen() {
                   <P className="text-gray-600">Objectif</P>
                   <H4 className="font-semibold">{objective.targetAmount}€</H4>
                 </View>
-                <View className="flex flex-row items-center justify-between">
+                <View className="flex flex-row items-end justify-between mt-4">
                   <P className="text-gray-600">Votre solde</P>
-                  <H4 className="font-semibold text-green-600">{user?.balance || 0}€</H4>
+                  <H3 className="font-semibold text-foreground">{user?.balance || 0}€</H3>
                 </View>
               </View>
-            </View>
+            </Card>
 
             <View className="mx-auto flex flex-col gap-4 items-center p-10">
               <Input
@@ -215,7 +181,6 @@ export default function SaveMoneyScreen() {
                 placeholder="20" />
               <P className="text-5xl text-gray-400 font-light">€</P>
             </View>
-
             {hasInsufficientFunds && (
               <Alert variant="destructive" icon={CircleXIcon} className="mb-6">
                 <AlertTitle>Fonds insuffisants</AlertTitle>
@@ -224,9 +189,8 @@ export default function SaveMoneyScreen() {
                 </AlertDescription>
               </Alert>
             )}
-
             <View className="flex flex-col gap-4">
-              <View>
+              <View className="flex flex-col gap-2">
                 <Label htmlFor="message">Message (optionnel)</Label>
                 <Input
                   id="message"
@@ -238,7 +202,6 @@ export default function SaveMoneyScreen() {
                   numberOfLines={3}
                   textAlignVertical="top"
                   onFocus={() => {
-                    // Scroll vers le bas quand le champ message est focusé
                     setTimeout(() => {
                       scrollViewRef.current?.scrollToEnd({ animated: true });
                     }, 100);

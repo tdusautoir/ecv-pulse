@@ -49,19 +49,22 @@ export default function SavingsScreen() {
     },
   });
 
-  const totalSaved = 1000;
-  const totalTarget = 1000;
+  const totalSaved = objectives ? objectives.reduce((sum, obj) => sum + parseFloat(obj.currentAmount.toString()), 0) : 0;
+  const totalTarget = objectives ? objectives.reduce((sum, obj) => sum + parseFloat(obj.targetAmount.toString()), 0) : 0;
 
-  const progression = totalTarget > 0 ? Math.round((totalSaved / totalTarget) * 100) : 0;
-  const monthlyEvolution = 12; // TODO: Calculer l'évolution mensuelle réelle
-  const monthlyIncome = 2500;
-  const monthlyExpenses = 1800;
-  const availableToSave = 700;
-  const currentMonthlySaving = 350;
+  const calculateProgression = () => {
+    if (totalTarget === 0) return 0;
+    return Math.round((totalSaved / totalTarget) * 100);
+  };
 
   const getObjectiveIcon = (name: string) => {
     return getObjectiveEmoji(name);
   };
+
+  // FAKES VALUES
+  const monthlyEvolution = 12
+  const currentMonthSaved = 100;
+  const currentMonthSaveObjective = 1000;
 
   return (
     <ScrollView style={{ flex: 1 }} className="bg-gray-50">
@@ -99,11 +102,12 @@ export default function SavingsScreen() {
                       </View>
                     </View>
                     <View className="flex-1">
-                      <H1 className="text-white text-3xl font-bold mb-1">{progression}%</H1>
+                      <H1 className="text-white text-3xl font-bold mb-1">{calculateProgression()}%</H1>
                       <P className="text-white/90 mb-2">Progression</P>
                       <Progress
-                        value={progression}
-                        className="h-2 bg-white/20 rounded-full"
+                        value={totalSaved}
+                        max={totalTarget}
+                        className="h-2 mt-2 bg-white/20 rounded-full"
                         indicatorClassName="bg-[#4ade80] rounded-full"
                       />
                     </View>
@@ -113,55 +117,31 @@ export default function SavingsScreen() {
             </View>
           </LinearGradient>
         </View>
-
         <View className="p-6 space-y-6 mt-2">
-          <Card className="bg-white rounded-2xl shadow-lg border border-gray-200">
-            <View className="p-0">
-              <View className="flex flex-row items-center gap-3 mb-6">
-                <View className="w-10 h-10 bg-[#007C82]/10 rounded-xl flex items-center justify-center">
-                  <BarChart3Icon size={24} color={colors.primary} />
-                </View>
-                <View>
-                  <H3 className="text-xl font-bold text-gray-900">Budget mensuel</H3>
-                  <P className="text-gray-600">Aperçu de tes finances</P>
-                </View>
+          <Card className="bg-white rounded-2xl shadow-lg border border-gray-200 flex-col gap-4">
+            <View className="flex flex-row items-center justify-between mb-2">
+              <P className="text-gray-700 font-medium">Disponible pour épargne</P>
+              <H3 className="text-2xl font-bold text-[#007C82]">{1000}€</H3>
+            </View>
+            <Separator className="border-gray-200" />
+            <View className="pt-2">
+              <View className="flex flex-row items-center justify-between text-sm">
+                <Small className="text-gray-600">Épargne actuelle</Small>
+                <Small className="text-gray-600">{currentMonthSaved}€/mois</Small>
               </View>
-
-              <View className="gap-3">
-                <View className="flex flex-row items-center justify-between">
-                  <P className="text-gray-700 font-medium">Revenus</P>
-                  <H3 className="text-2xl font-bold text-green-600">+{monthlyIncome}€</H3>
-                </View>
-                <View className="flex flex-row items-center justify-between">
-                  <P className="text-gray-700 font-medium">Dépenses</P>
-                  <H3 className="text-2xl font-bold text-gray-900">-{monthlyExpenses}€</H3>
-                </View>
-                <Separator className="border-gray-200 my-2" />
-                <View className="pt-2">
-                  <View className="flex flex-row items-center justify-between mb-2">
-                    <P className="text-gray-700 font-medium">Disponible pour épargne</P>
-                    <H3 className="text-2xl font-bold text-[#007C82]">{availableToSave}€</H3>
-                  </View>
-                  <View className="flex flex-row items-center justify-between text-sm">
-                    <Small className="text-gray-600">Épargne actuelle</Small>
-                    <Small className="text-gray-600">{currentMonthlySaving}€/mois</Small>
-                  </View>
-                  <Progress
-                    value={availableToSave / 1000 * 100}
-                    className="h-2 mt-2 bg-gray-200 rounded-full"
-                    indicatorClassName="bg-[#25378d] rounded-full"
-                  />
-                </View>
-              </View>
+              <Progress
+                value={currentMonthSaved / currentMonthSaveObjective * currentMonthSaved}
+                className="h-2 mt-2 bg-gray-200 rounded-full"
+                indicatorClassName="bg-[#007C82] rounded-full"
+              />
             </View>
           </Card>
-
-          {/* Objectifs d'épargne */}
           <View className="space-y-4 mt-8">
             <View className="flex flex-row items-center justify-between mb-4">
               <H3 className="text-xl font-bold text-gray-900">Mes objectifs</H3>
               <Button
-                className="bg-primary text-white rounded-xl px-4 py-2 h-10 shadow-md"
+                size='sm'
+                className="bg-[#007C82] text-white rounded-xl px-4 py-2 h-10 shadow-md"
                 onPress={() => {
                   router.push('/savings/add');
                 }}
@@ -182,35 +162,22 @@ export default function SavingsScreen() {
             {(!isPending && objectives) && objectives.map(obj => {
               const percent = Math.round(obj.progressPercentage);
               const formattedDate = formatSavingsDate(obj.targetDate);
+
               return (
                 <Card key={obj.id} className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-6">
-                  <View className="p-0">
-                    <View className="flex flex-row items-start justify-between mb-4">
-                      <View className="flex flex-row items-center gap-4">
-                        <Text className="text-3xl">{getObjectiveIcon(obj.name)}</Text>
-                        <View>
-                          <H4 className="text-lg font-bold text-gray-900">{obj.name}</H4>
-                          {formattedDate && (
-                            <View className="flex flex-row items-center gap-2">
-                              <CalendarIcon size={16} color="#64748b" />
-                              <Small className="text-gray-600">{formattedDate}</Small>
-                            </View>
-                          )}
-                        </View>
+                  <View className="flex flex-col gap-4">
+                    <View className="flex flex-row items-center gap-4">
+                      <Text className="text-3xl">{getObjectiveIcon(obj.name)}</Text>
+                      <View>
+                        <H4 className="text-lg font-bold text-gray-900">{obj.name}</H4>
+                        {formattedDate && (
+                          <View className="flex flex-row items-center gap-2">
+                            <CalendarIcon size={16} color="#64748b" />
+                            <Small className="text-gray-600">{formattedDate}</Small>
+                          </View>
+                        )}
                       </View>
-                      <Button
-                        className="bg-[#007C82] hover:bg-[#006b70] text-white rounded-xl px-4 py-2 h-10 shadow-md"
-                        onPress={() => {
-                          router.push(`/savings/${obj.id}`);
-                        }}
-                      >
-                        <View className="flex flex-row items-center gap-1">
-                          <EuroIcon size={16} color="white" />
-                          <P className="text-white font-medium text-sm">Épargner</P>
-                        </View>
-                      </Button>
                     </View>
-
                     <View className="mb-4">
                       <View className="flex flex-row items-center justify-between mb-2">
                         <H3 className="text-2xl font-bold text-gray-900">{obj.currentAmount}€ / {obj.targetAmount}€</H3>
@@ -219,7 +186,7 @@ export default function SavingsScreen() {
                       <Progress
                         value={percent}
                         className="h-3 bg-gray-200 rounded-full mb-2"
-                        indicatorClassName="bg-[#25378d] rounded-full"
+                        indicatorClassName="bg-[#007C82] rounded-full"
                       />
                       <View className="flex flex-row items-center justify-between text-sm">
                         <Small className="text-gray-600">Plus que {obj.remainingAmount}€</Small>
@@ -228,6 +195,18 @@ export default function SavingsScreen() {
                         </Small>
                       </View>
                     </View>
+                    <Button
+                      size='sm'
+                      className="bg-[#007C82] hover:bg-[#006b70] text-white rounded-xl px-4 py-2 h-10 shadow-md"
+                      onPress={() => {
+                        router.push(`/savings/${obj.id}`);
+                      }}
+                    >
+                      <View className="flex flex-row items-center gap-1">
+                        <EuroIcon size={16} color="white" />
+                        <P className="text-white font-medium text-sm">Épargner</P>
+                      </View>
+                    </Button>
                   </View>
                 </Card>
               );
@@ -246,9 +225,7 @@ export default function SavingsScreen() {
                   <P className="text-gray-600">Optimise tes économies</P>
                 </View>
               </View>
-              <P className="text-gray-700 mb-4">
-                Tu peux encore épargner 350€ par mois ! Pourquoi ne pas créer un nouvel objectif ?
-              </P>
+              <P className="text-gray-700 mb-4">Tu peux encore épargner 350€ par mois ! Pourquoi ne pas créer un nouvel objectif ?</P>
               <Button
                 className="bg-white border border-[#007C82] text-[#007C82] rounded-xl h-10 px-4 py-2"
                 onPress={() => {

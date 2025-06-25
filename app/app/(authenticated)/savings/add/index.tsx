@@ -1,6 +1,6 @@
 import { Button, LoadingButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { H1, H3, P, Small } from "@/components/ui/typography";
 import { useState } from "react";
 import { Text, View } from "react-native";
@@ -21,17 +21,12 @@ type SavingsObjective = {
 };
 
 export default function AddSavingsObjectiveScreen() {
-  const [objective, setObjective] = useState<SavingsObjective>({
-    name: '',
-    targetAmount: ''
-  });
+  const [objective, setObjective] = useState<SavingsObjective>({ name: '', targetAmount: '' });
   const [error, setError] = useState<boolean>(false);
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  const disabled = objective.name.trim() === '' ||
-    objective.targetAmount.trim() === '';
+  const disabled = objective.name.trim() === '' || objective.targetAmount.trim() === '';
 
   const handleAmountChange = (text: string) => {
     let cleanedValue = text.replace(/[^0-9.,]/g, '');
