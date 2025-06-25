@@ -15,6 +15,7 @@ export default class TransactionsController {
     const transactions = await Transaction.query()
       .where('senderId', user.id)
       .orWhere('receiverId', user.id)
+      .orderBy('createdAt', 'desc')
 
     return transactions
   }
