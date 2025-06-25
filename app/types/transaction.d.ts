@@ -25,4 +25,10 @@ type Transaction = {
     message: string,
     description: null,
     category: null,
+    sender: {
+        fullName: string
+    },
+    receiver: {
+        fullName: string
+    }
 })

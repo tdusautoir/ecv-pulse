@@ -35,11 +35,13 @@ const categoryIconMap: Record<TransactionCategory, LucideIcon> = {
 
 export function useTransaction(transaction: Transaction, userId: number): {
     icon: LucideIcon,
+    description: string,
     type: 'income' | 'outcome'
 } {
     if (transaction.type === 'p2p') {
         return {
             icon: ArrowLeftRightIcon,
+            description: transaction.receiverId === userId ? transaction.sender.fullName : transaction.receiver.fullName,
             type: transaction.receiverId === userId ? 'income' : 'outcome'
         };
     }
@@ -48,12 +50,14 @@ export function useTransaction(transaction: Transaction, userId: number): {
         const icon = categoryIconMap[transaction.category as TransactionCategory] || CircleIcon;
         return {
             icon,
+            description: transaction.description,
             type: 'outcome'
         };
     }
 
     return {
         icon: CircleIcon,
+        description: 'Inconnu',
         type: 'outcome'
     };
 }
@@ -69,7 +73,7 @@ export default function TransactionCard({ transaction }: { transaction: Transact
                     <info.icon width={24} height={24} color={colors['primary']} />
                 </View>
                 <View className="flex flex-col">
-                    <P className="truncate font-bold">{transaction.description}</P>
+                    <P className="truncate font-bold">{info.description}</P>
                     <Muted>{formatDistance(new Date(transaction.createdAt), new Date(), { locale: fr })}</Muted>
                 </View>
             </View>

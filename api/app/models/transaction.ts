@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import User from './user.js'
 
 export type TransactionType = 'p2p' | 'group' | 'subscription' | 'deposit' | 'withdrawal' | 'saving'
 export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'cancelled'
@@ -48,4 +50,14 @@ export default class Transaction extends BaseModel {
 
   @column.dateTime()
   declare processedAt: DateTime | null
+
+  @belongsTo(() => User, {
+    foreignKey: 'senderId',
+  })
+  declare sender: BelongsTo<typeof User>
+
+  @belongsTo(() => User, {
+    foreignKey: 'receiverId',
+  })
+  declare receiver: BelongsTo<typeof User>
 }

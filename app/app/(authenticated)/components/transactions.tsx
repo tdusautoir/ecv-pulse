@@ -17,7 +17,7 @@ export default function Transactions() {
         <View className="flex flex-col gap-8 mt-4">
             {isPending && (
                 [...Array(4)].map((_, index) => (
-                    <Skeleton className='h-12 w-full' />
+                    <Skeleton key={index} className='h-12 w-full' />
                 ))
             )}
             {(!isPending && data) && (
