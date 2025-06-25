@@ -3,16 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H1, H3, H4, P, Small } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
-import { ScrollView, View } from "react-native";
+import { ScrollView, StatusBar, View } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { StarIcon, TrendingUpIcon } from "lucide-react-native";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import Transactions from "./components/transactions";
+import Transactions from "../../components/dashboard/transactions";
 import colors from "@/constants/colors";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Dashboard() {
     const { logout, user } = useAuth()
+    const insets = useSafeAreaInsets();
 
     return (
         <ScrollView style={{ flex: 1 }} className="bg-background">
@@ -21,7 +23,7 @@ export default function Dashboard() {
                     <LinearGradient
                         colors={[colors.primary, colors.tertiary]}
                         end={{ x: 0.75, y: 0.75 }}
-                        style={{ width: '100%' }}
+                        style={{ width: '100%', paddingTop: insets.top }}
                     >
                         <View className="p-6 py-8 flex flex-col gap-8">
                             <View className="flex flex-row justify-between items-center">
@@ -63,7 +65,7 @@ export default function Dashboard() {
                                     <P className="text-white font-bold">Évolution</P>
                                     <View className="flex flex-row gap-2">
                                         <TrendingUpIcon color={colors["tertiary-foreground"]} />
-                                        <P className={`text-[${colors["tertiary-foreground"]}] font-extrabold`}>+0€ ce mois</P>
+                                        <P className={`text-[#86EFAC] font-extrabold`}>+0€ ce mois</P>
                                     </View>
                                 </View>
                             </View>

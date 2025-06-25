@@ -2,7 +2,7 @@ import { AuthProvider } from '@/context/auth-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Slot } from 'expo-router';
 import './global.css'
-import { SafeAreaView, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 
 const queryClient = new QueryClient();
 
@@ -11,7 +11,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
             <AuthProvider>
                 <Slot />
-                <StatusBar barStyle='dark-content' />
+                <StatusBar barStyle='default' />
             </AuthProvider>
         </QueryClientProvider>
     );

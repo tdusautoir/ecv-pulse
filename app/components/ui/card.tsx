@@ -11,6 +11,15 @@ function Card({
 }) {
   return (
     <View
+      style={{
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: -2,
+        },
+        shadowOpacity: 0.10,
+        shadowRadius: 4,
+      }}
       className={cn(
         'rounded-3xl border border-border bg-card shadow-sm shadow-foreground/10 px-8 py-10',
         className
