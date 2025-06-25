@@ -81,6 +81,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
     const result = await Transaction.query()
       .where('senderId', this.id)
       .andWhereBetween('createdAt', [startOfMonth.toSQL()!, endOfMonth.toSQL()!])
+      .whereNot('type', 'saving')
       .sum('amount as total')
 
     return Number(result[0].$extras.total) || 0
