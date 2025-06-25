@@ -20,6 +20,7 @@ import {
 import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/constants/api-client";
+import { getObjectiveEmoji, formatSavingsDate } from "@/lib/savings-utils";
 
 type SavingsObjective = {
   id: number;
@@ -48,8 +49,9 @@ export default function SavingsScreen() {
     },
   });
 
-  const totalSaved = objectives?.reduce((sum, obj) => sum + obj.currentAmount, 0) || 0;
-  const totalTarget = objectives?.reduce((sum, obj) => sum + obj.targetAmount, 0) || 0;
+  const totalSaved = 1000;
+  const totalTarget = 1000;
+
   const progression = totalTarget > 0 ? Math.round((totalSaved / totalTarget) * 100) : 0;
   const monthlyEvolution = 12; // TODO: Calculer l'évolution mensuelle réelle
   const monthlyIncome = 2500;
@@ -58,25 +60,7 @@ export default function SavingsScreen() {
   const currentMonthlySaving = 350;
 
   const getObjectiveIcon = (name: string) => {
-    const lowerName = name.toLowerCase();
-    if (lowerName.includes('vacance') || lowerName.includes('été') || lowerName.includes('voyage')) return '🏖️';
-    if (lowerName.includes('téléphone') || lowerName.includes('phone') || lowerName.includes('mobile')) return '📱';
-    if (lowerName.includes('voiture') || lowerName.includes('permis') || lowerName.includes('conduire')) return '🚗';
-    if (lowerName.includes('maison') || lowerName.includes('appartement') || lowerName.includes('immobilier')) return '🏠';
-    if (lowerName.includes('études') || lowerName.includes('formation') || lowerName.includes('école')) return '🎓';
-    if (lowerName.includes('mariage') || lowerName.includes('noces')) return '💒';
-    if (lowerName.includes('retraite') || lowerName.includes('pension')) return '👴';
-    return '💰';
-  };
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return null;
-    const date = new Date(dateString);
-    const months = [
-      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-    ];
-    return `${months[date.getMonth()]} ${date.getFullYear()}`;
+    return getObjectiveEmoji(name);
   };
 
   return (
@@ -197,7 +181,7 @@ export default function SavingsScreen() {
 
             {(!isPending && objectives) && objectives.map(obj => {
               const percent = Math.round(obj.progressPercentage);
-              const formattedDate = formatDate(obj.targetDate);
+              const formattedDate = formatSavingsDate(obj.targetDate);
               return (
                 <Card key={obj.id} className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-6">
                   <View className="p-0">
@@ -217,7 +201,7 @@ export default function SavingsScreen() {
                       <Button
                         className="bg-[#007C82] hover:bg-[#006b70] text-white rounded-xl px-4 py-2 h-10 shadow-md"
                         onPress={() => {
-                          // TODO: Navigate to save money screen
+                          router.push(`/savings/${obj.id}`);
                         }}
                       >
                         <View className="flex flex-row items-center gap-1">
@@ -240,7 +224,7 @@ export default function SavingsScreen() {
                       <View className="flex flex-row items-center justify-between text-sm">
                         <Small className="text-gray-600">Plus que {obj.remainingAmount}€</Small>
                         <Small className="text-gray-600">
-                          {obj.completed ? 'Objectif atteint !' : `${Math.round(obj.targetAmount / 12)}€/mois`}
+                          {Number(obj.currentAmount) >= Number(obj.targetAmount) ? 'Objectif atteint !' : `${Math.round(obj.targetAmount / 12)}€/mois`}
                         </Small>
                       </View>
                     </View>
