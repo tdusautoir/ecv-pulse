@@ -261,7 +261,7 @@ export async function createFakeP2PTransactionsForUser(userId: number, contacts:
     type: 'p2p' as const,
     status: 'completed' as const,
     createdAt: DateTime.fromMillis(
-      Date.now() - Math.floor(Math.random() * 5 * 24 * 60 * 60 * 1000)
+      Date.now() - Math.floor(Math.random() * 20 * 24 * 60 * 60 * 1000)
     ),
   }))
 
