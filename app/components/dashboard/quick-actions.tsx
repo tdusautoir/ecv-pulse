@@ -1,5 +1,4 @@
 import { Card, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Send, Target, BarChart3 } from "lucide-react-native";
 import { TouchableOpacity, View } from "react-native";
@@ -26,9 +25,7 @@ export default function QuickActions() {
         </TouchableOpacity>
         <TouchableOpacity
           className="flex-1 native:pt-5 pb-4 bg-[#1a4b8c] rounded-xl flex-col items-center justify-center gap-2 border-0 shadow-md"
-          onPress={() => {
-            // TODO: Navigate to budget screen
-          }}>
+          onPress={() => { router.replace('/(authenticated)/(tabs)/budget') }}>
           <BarChart3 size={16} color="white" />
           <Text className="text-sm font-medium text-white">Budget</Text>
         </TouchableOpacity>

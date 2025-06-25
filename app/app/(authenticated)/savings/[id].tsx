@@ -26,7 +26,7 @@ export default function SaveMoneyScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const params = useLocalSearchParams();
-  const { user } = useAuth();
+  const { user, refetchUser } = useAuth();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -74,6 +74,7 @@ export default function SaveMoneyScreen() {
         message: message.trim() !== '' ? message : undefined,
       })
 
+      refetchUser()
       queryClient.invalidateQueries({ queryKey: ['profile'] })
       await queryClient.refetchQueries({ queryKey: ['savings-objectives'] })
     },

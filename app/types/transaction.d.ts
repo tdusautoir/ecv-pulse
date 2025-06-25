@@ -33,4 +33,7 @@ type Transaction = {
         fullName: string | null,
         phoneNumber: string
     }
+} | {
+    type: 'saving',
+    amount: number
 })

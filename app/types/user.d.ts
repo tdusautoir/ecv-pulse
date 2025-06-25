@@ -1,6 +1,8 @@
 type UserStats = {
     currentMonthSpent: number;
+    currentMonthGain: number;
     spendingByCategory: Record<string, number>;
+    currentMonthGainSpentDiff: number;
 }
 
 type User = {

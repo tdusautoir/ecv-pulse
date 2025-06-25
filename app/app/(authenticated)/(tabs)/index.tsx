@@ -1,9 +1,8 @@
 import Logo from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
 import { H1, H3, H4, P, Small } from "@/components/ui/typography";
 import { useAuth } from "@/context/auth-context";
-import { ScrollView, StatusBar, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { StarIcon, TrendingUpIcon } from "lucide-react-native";
 import { Progress } from "@/components/ui/progress";
@@ -14,7 +13,7 @@ import colors from "@/constants/colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Dashboard() {
-    const { logout, user } = useAuth()
+    const { user } = useAuth()
     const insets = useSafeAreaInsets();
 
     return (
@@ -76,9 +75,6 @@ export default function Dashboard() {
                 <View className="flex flex-col gap-8 px-6 w-full">
                     <QuickActions />
                     <Transactions />
-                    <Button variant='destructive' onPress={() => logout()}>
-                        <Text className="">Deconnexion</Text>
-                    </Button>
                 </View>
             </View>
         </ScrollView>

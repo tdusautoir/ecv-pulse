@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { H1, H3, H4, P, Small } from "@/components/ui/typography";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -12,7 +12,6 @@ import {
   TrendingUpIcon,
   CalendarIcon,
   ArrowLeftIcon,
-  BarChart3Icon,
   PlusIcon,
   EuroIcon,
   PiggyBankIcon
@@ -21,6 +20,8 @@ import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/constants/api-client";
 import { getObjectiveEmoji, formatSavingsDate } from "@/lib/savings-utils";
+import { useAuth } from "@/context/auth-context";
+import { cn } from "@/lib/utils";
 
 type SavingsObjective = {
   id: number;
@@ -40,6 +41,8 @@ type SavingsObjective = {
 export default function SavingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const auth = useAuth();
+  const user = auth.user!;
 
   const { data: objectives, isPending } = useQuery<SavingsObjective[]>({
     queryKey: ['savings-objectives'],
@@ -62,9 +65,7 @@ export default function SavingsScreen() {
   };
 
   // FAKES VALUES
-  const monthlyEvolution = 12
-  const currentMonthSaved = 100;
-  const currentMonthSaveObjective = 1000;
+  const monthlyEvolution = 0
 
   return (
     <ScrollView style={{ flex: 1 }} className="bg-gray-50">
@@ -97,8 +98,8 @@ export default function SavingsScreen() {
                       <H1 className="text-white text-3xl font-bold mb-1">{totalSaved}€</H1>
                       <P className="text-white/90 mb-2">Total épargné</P>
                       <View className="flex flex-row items-center gap-2">
-                        <TrendingUpIcon color="#4ade80" size={16} />
-                        <P className="text-[#4ade80] font-medium text-sm">+{monthlyEvolution}% ce mois</P>
+                        <TrendingUpIcon color="#86EFAC" size={16} />
+                        <P className="text-[#86EFAC] font-extrabold text-sm">+{monthlyEvolution}% ce mois</P>
                       </View>
                     </View>
                     <View className="flex-1">
@@ -108,7 +109,7 @@ export default function SavingsScreen() {
                         value={totalSaved}
                         max={totalTarget}
                         className="h-2 mt-2 bg-white/20 rounded-full"
-                        indicatorClassName="bg-[#4ade80] rounded-full"
+                        indicatorClassName="bg-[#86EFAC] rounded-full"
                       />
                     </View>
                   </View>
@@ -119,21 +120,36 @@ export default function SavingsScreen() {
         </View>
         <View className="p-6 space-y-6 mt-2">
           <Card className="bg-white rounded-2xl shadow-lg border border-gray-200 flex-col gap-4">
-            <View className="flex flex-row items-center justify-between mb-2">
-              <P className="text-gray-700 font-medium">Disponible pour épargne</P>
-              <H3 className="text-2xl font-bold text-[#007C82]">{1000}€</H3>
-            </View>
-            <Separator className="border-gray-200" />
-            <View className="pt-2">
-              <View className="flex flex-row items-center justify-between text-sm">
-                <Small className="text-gray-600">Épargne actuelle</Small>
-                <Small className="text-gray-600">{currentMonthSaved}€/mois</Small>
+            <CardHeader className="p-0 mb-4">
+              <CardTitle>Résumé du mois</CardTitle>
+              <CardDescription>
+                {user.stats.currentMonthGainSpentDiff < 0
+                  ? `Vous avez dépensé ${Math.abs(user.stats.currentMonthGainSpentDiff).toFixed(2)}€ de plus que vos gains ce mois-ci.`
+                  : user.stats.currentMonthGainSpentDiff === 0
+                    ? "Vous avez équilibré vos gains et dépenses ce mois-ci."
+                    : `Il vous reste ${user.stats.currentMonthGainSpentDiff.toFixed(2)}€ à épargner ce mois-ci.`}
+              </CardDescription>
+            </CardHeader>
+            <View className="space-y-2">
+              <View className="flex flex-row items-center justify-between mb-2">
+                <P className="text-gray-700 font-medium text-lg">Dépensé</P>
+                <H3 className="text-2xl font-bold text-destructive">
+                  {user.stats.currentMonthSpent.toFixed(2)}€
+                </H3>
               </View>
-              <Progress
-                value={currentMonthSaved / currentMonthSaveObjective * currentMonthSaved}
-                className="h-2 mt-2 bg-gray-200 rounded-full"
-                indicatorClassName="bg-[#007C82] rounded-full"
-              />
+              <View className="flex flex-row items-center justify-between mb-4">
+                <P className="text-gray-700 font-medium text-lg">Reçu</P>
+                <H3 className="text-2xl font-bold text-[#007C82]">
+                  {user.stats.currentMonthGain.toFixed(2)}€
+                </H3>
+              </View>
+              <Separator className="border-gray-200" />
+              <View className="flex flex-row items-center justify-between mt-4 mb-2">
+                <P className="text-gray-700 font-medium">Disponible pour épargne</P>
+                <H3 className={cn("text-2xl font-bold text-[#007C82]", user.stats.currentMonthGainSpentDiff < 0 && 'text-destructive')}>
+                  {user.stats.currentMonthGainSpentDiff.toFixed(2)}€
+                </H3>
+              </View>
             </View>
           </Card>
           <View className="space-y-4 mt-8">
@@ -212,8 +228,6 @@ export default function SavingsScreen() {
               );
             })}
           </View>
-
-          {/* Conseil épargne */}
           <Card className="rounded-2xl shadow-lg border border-[#007C82]/20 p-2 mb-6">
             <View className="p-6">
               <View className="flex flex-row items-center gap-3 mb-4">
