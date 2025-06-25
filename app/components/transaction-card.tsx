@@ -13,6 +13,8 @@ import {
     BookOpenIcon,
     LightbulbIcon,
     CircleIcon,
+    ArrowRightIcon,
+    CircleQuestionMarkIcon,
 } from "lucide-react-native";
 import { View } from "react-native";
 import { H4, Muted, P } from "./ui/typography";
@@ -30,7 +32,7 @@ const categoryIconMap: Record<TransactionCategory, LucideIcon> = {
     health: HeartPulseIcon,
     education: BookOpenIcon,
     utilities: LightbulbIcon,
-    other: CircleIcon,
+    other: CircleQuestionMarkIcon,
 };
 
 export function useTransaction(transaction: Transaction, userId: number): {
@@ -38,11 +40,14 @@ export function useTransaction(transaction: Transaction, userId: number): {
     description: string,
     type: 'income' | 'outcome'
 } {
+    let type: 'income' | 'outcome' = 'outcome';
+    if (transaction.receiverId === userId) type = 'income';
+
     if (transaction.type === 'p2p') {
         return {
             icon: ArrowLeftRightIcon,
             description: transaction.receiverId === userId ? (transaction.sender.fullName ?? transaction.sender.phoneNumber) : (transaction.receiver.fullName ?? transaction.receiver.phoneNumber),
-            type: transaction.receiverId === userId ? 'income' : 'outcome'
+            type
         };
     }
 
@@ -51,14 +56,14 @@ export function useTransaction(transaction: Transaction, userId: number): {
         return {
             icon,
             description: transaction.description,
-            type: 'outcome'
+            type
         };
     }
 
     return {
-        icon: CircleIcon,
+        icon: CircleQuestionMarkIcon,
         description: 'Inconnu',
-        type: 'outcome'
+        type
     };
 }
 

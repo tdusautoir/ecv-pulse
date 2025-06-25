@@ -156,6 +156,35 @@ const categoryData: Record<
   },
 }
 
+const incomeData: Record<string, { descriptions: string[]; minAmount: number; maxAmount: number }> =
+  {
+    job: {
+      descriptions: ['Petit boulot', 'Stage payé', 'Job étudiant'],
+      minAmount: 100,
+      maxAmount: 800,
+    },
+    allowance: {
+      descriptions: ['Argent de poche', 'Aide parentale'],
+      minAmount: 20,
+      maxAmount: 200,
+    },
+    gift: {
+      descriptions: ["Cadeau d'anniversaire", 'Cadeau'],
+      minAmount: 10,
+      maxAmount: 150,
+    },
+    resale: {
+      descriptions: ['Vente Vinted', 'Vente Leboncoin'],
+      minAmount: 5,
+      maxAmount: 100,
+    },
+    other: {
+      descriptions: ['Remboursement ami', 'Virement reçu'],
+      minAmount: 5,
+      maxAmount: 100,
+    },
+  }
+
 /**
  * Generates an array of fake withdrawal transactions for a given user.
  *
@@ -227,8 +256,6 @@ export async function createFakeWithdrawalTransactionsForUser(userId: number, co
     processedAt: tx.createdAt,
   }))
 
-  console.log(transactionsToCreate)
-
   await Transaction.createMany(transactionsToCreate)
 }
 
@@ -266,4 +293,76 @@ export async function createFakeP2PTransactionsForUser(userId: number, contacts:
   }))
 
   await Transaction.createMany(fakeTransactions)
+}
+
+/**
+ * Generates an array of fake income/deposit transactions for a given user.
+ *
+ * @param userId - The ID of the user for whom to generate income transactions.
+ * @param count - The number of transactions to generate (default: 20).
+ * @returns An array of FakeTransactionData objects.
+ */
+export function generateFakeIncomeTransactions(
+  userId: number,
+  count: number = 20
+): FakeTransactionData[] {
+  const transactions: FakeTransactionData[] = []
+  const incomeTypes: string[] = Object.keys(incomeData)
+
+  // Generate transactions for the last 3 months
+  const now = DateTime.now()
+  const threeMonthsAgo = now.minus({ months: 3 })
+
+  for (let i = 0; i < count; i++) {
+    const incomeType = incomeTypes[Math.floor(Math.random() * incomeTypes.length)]
+    const incomeInfo = incomeData[incomeType]
+    const description =
+      incomeInfo.descriptions[Math.floor(Math.random() * incomeInfo.descriptions.length)]
+    const amount =
+      Math.round(
+        (Math.random() * (incomeInfo.maxAmount - incomeInfo.minAmount) + incomeInfo.minAmount) * 100
+      ) / 100
+
+    // Random date within the last 3 months
+    const randomDays = Math.floor(Math.random() * 90)
+    const createdAt = threeMonthsAgo.plus({ days: randomDays })
+
+    transactions.push({
+      senderId: null,
+      receiverId: userId,
+      amount,
+      category: 'other', // Income doesn't have specific categories like expenses
+      description,
+      type: 'deposit',
+      createdAt,
+    })
+  }
+
+  return transactions.sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis())
+}
+
+/**
+ * Creates fake income/deposit transactions in the database for a given user.
+ *
+ * @param userId - The ID of the user for whom to create income transactions.
+ * @param count - The number of transactions to create (default: 20).
+ */
+export async function createFakeIncomeTransactionsForUser(userId: number, count: number = 20) {
+  const fakeTransactions = generateFakeIncomeTransactions(userId, count)
+
+  const transactionsToCreate = fakeTransactions.map((tx) => ({
+    id: crypto.randomUUID(),
+    senderId: tx.senderId,
+    receiverId: tx.receiverId,
+    amount: tx.amount,
+    type: tx.type,
+    category: tx.category,
+    status: 'completed' as const,
+    description: tx.description,
+    message: null,
+    createdAt: tx.createdAt,
+    processedAt: tx.createdAt,
+  }))
+
+  await Transaction.createMany(transactionsToCreate)
 }

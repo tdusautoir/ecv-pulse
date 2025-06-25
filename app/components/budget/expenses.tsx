@@ -1,10 +1,23 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatCurrency } from "@/lib/utils";
 import { useQuery } from '@tanstack/react-query';
 import api from "@/constants/api-client";
+
+const categoryTranslations: Record<string, string> = {
+    shopping: "Shopping",
+    video_games: "Jeux vidéo",
+    food: "Alimentation",
+    bar: "Bar/Restaurant",
+    transport: "Transport",
+    entertainment: "Divertissement",
+    health: "Santé",
+    education: "Éducation",
+    utilities: "Services publics",
+    other: "Autre"
+};
 
 const getCategoryIcon = (category: string) => {
     const icons: Record<string, string> = {
@@ -15,6 +28,8 @@ const getCategoryIcon = (category: string) => {
         health: "🏥",
         education: "🏫",
         bar: "🍻",
+        video_games: "🎮",
+        utilities: "⚡",
         other: "🥷"
     };
     return icons[category] || "📦";
@@ -29,6 +44,8 @@ const getCategoryColor = (category: string) => {
         health: "#10b981",
         education: "#06b6d4",
         bar: "#ec4899",
+        video_games: "#6366f1",
+        utilities: "#fbbf24",
         other: "#6b7280"
     };
     return colors[category] || "#6b7280";
@@ -80,7 +97,7 @@ export default function ExpensesStats() {
                                     <Text className="text-lg">{getCategoryIcon(category)}</Text>
                                     <View className="flex flex-col">
                                         <Text className="font-medium capitalize">
-                                            {category === 'bar' ? 'Bar/Restaurant' : category}
+                                            {categoryTranslations[category] || category}
                                         </Text>
                                         <Text className="text-xs text-muted-foreground">
                                             {percentage.toFixed(1)}% du total
