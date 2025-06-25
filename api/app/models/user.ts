@@ -80,11 +80,37 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
     const result = await Transaction.query()
       .where('senderId', this.id)
-      .andWhereNotNull('category')
       .andWhereBetween('createdAt', [startOfMonth.toSQL()!, endOfMonth.toSQL()!])
       .sum('amount as total')
 
     return Number(result[0].$extras.total) || 0
+  }
+
+  /**
+   * Get the total gain (received) amount for the current month
+   */
+  async getCurrentMonthGain(): Promise<number> {
+    const now = DateTime.now()
+    const startOfMonth = now.startOf('month')
+    const endOfMonth = now.endOf('month')
+
+    const result = await Transaction.query()
+      .where('receiverId', this.id)
+      .andWhereBetween('createdAt', [startOfMonth.toSQL()!, endOfMonth.toSQL()!])
+      .sum('amount as total')
+
+    return Number(result[0].$extras.total) || 0
+  }
+
+  /**
+   * Get the difference between gain and spent for the current month
+   */
+  async getCurrentMonthGainSpentDiff(): Promise<number> {
+    const [gain, spent] = await Promise.all([
+      this.getCurrentMonthGain(),
+      this.getCurrentMonthSpent(),
+    ])
+    return gain - spent
   }
 
   /**

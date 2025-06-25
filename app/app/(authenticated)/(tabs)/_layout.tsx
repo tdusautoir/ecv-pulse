@@ -23,6 +23,12 @@ export default function LoggedInLayout() {
                         title: 'Accueil',
                     }}
                 />
+                <Tabs.Screen
+                    name="budget"
+                    options={{
+                        title: 'Budget',
+                    }}
+                />
             </Tabs>
         </SafeAreaView>
     );

@@ -3,17 +3,7 @@ import * as SecureStore from "expo-secure-store";
 import apiClient from "@/constants/api-client";
 import { TOKEN_KEY } from "@/constants/auth";
 import { useQuery } from "@tanstack/react-query";
-
-type User = {
-    id: number;
-    fullName: String;
-    email: string;
-    phoneNumber: string;
-    balance: number;
-    level: number;
-    xp: number;
-    avatarUrl: string;
-}
+import api from "@/constants/api-client";
 
 type RegisterPayload = {
     email: string;
@@ -28,6 +18,7 @@ type AuthProps = {
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     register: (payload: RegisterPayload) => Promise<void>;
+    refetchUser: () => void
 }
 
 const AuthContext = createContext<AuthProps | undefined>(undefined);
@@ -44,12 +35,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
 
     const loadUser = useQuery({
-        queryFn: async () => {
-            const response = await apiClient.get('/me');
-            setUser(response.data);
-            return response;
-        },
         queryKey: ['profile'],
+        queryFn: async () => {
+            const { data } = await api.get('/me');
+            setUser(data);
+            return data;
+        },
         retry: false
     })
 
@@ -91,6 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const value: AuthProps = {
         user,
         isLoading: loadUser.isLoading,
+        refetchUser: loadUser.refetch,
         login,
         logout,
         register,

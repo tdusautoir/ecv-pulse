@@ -3,6 +3,7 @@ import { registerUserValidator } from '#validators/users'
 import User from '#models/user'
 import Contact from '#models/contact'
 import {
+  createFakeIncomeTransactionsForUser,
   createFakeP2PTransactionsForUser,
   createFakeWithdrawalTransactionsForUser,
 } from './transactions.js'
@@ -38,8 +39,9 @@ export async function registerFakeCICUser(payload: InferInput<typeof registerUse
     contacts.push(contact)
   }
 
-  createFakeP2PTransactionsForUser(user.id, contacts)
-  createFakeWithdrawalTransactionsForUser(user.id, 50)
+  await createFakeP2PTransactionsForUser(user.id, contacts)
+  await createFakeIncomeTransactionsForUser(user.id, 40)
+  await createFakeWithdrawalTransactionsForUser(user.id, 50)
 
   return user
 }
