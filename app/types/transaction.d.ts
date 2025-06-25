@@ -26,9 +26,11 @@ type Transaction = {
     description: null,
     category: null,
     sender: {
-        fullName: string
+        fullName: string | null,
+        phoneNumber: string
     },
     receiver: {
-        fullName: string
+        fullName: string | null,
+        phoneNumber: string
     }
 })

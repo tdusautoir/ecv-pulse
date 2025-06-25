@@ -17,10 +17,10 @@ export default class TransactionsController {
       .orWhere('receiverId', user.id)
       .orderBy('createdAt', 'desc')
       .preload('sender', (query) => {
-        query.select(['id', 'fullName'])
+        query.select(['id', 'fullName', 'phoneNumber'])
       })
       .preload('receiver', (query) => {
-        query.select(['id', 'fullName'])
+        query.select(['id', 'fullName', 'phoneNumber'])
       })
 
     return transactions

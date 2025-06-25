@@ -16,6 +16,7 @@ export default class ContactsController {
         query.select('id', 'fullName', 'email', 'avatarUrl', 'phoneNumber')
       })
       .select('id', 'nickname', 'isFavorite', 'contactUserId')
+      .orderBy('createdAt', 'desc')
 
     const contacts = contactsRaw.map((contact) => {
       const contactUser = contact.contactUser

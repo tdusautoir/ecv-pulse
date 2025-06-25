@@ -41,7 +41,7 @@ export function useTransaction(transaction: Transaction, userId: number): {
     if (transaction.type === 'p2p') {
         return {
             icon: ArrowLeftRightIcon,
-            description: transaction.receiverId === userId ? transaction.sender.fullName : transaction.receiver.fullName,
+            description: transaction.receiverId === userId ? (transaction.sender.fullName ?? transaction.sender.phoneNumber) : (transaction.receiver.fullName ?? transaction.receiver.phoneNumber),
             type: transaction.receiverId === userId ? 'income' : 'outcome'
         };
     }
