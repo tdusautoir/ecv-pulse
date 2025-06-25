@@ -161,7 +161,7 @@ export default function SavingsScreen() {
               <Button
                 className="bg-primary text-white rounded-xl px-4 py-2 h-10 shadow-md"
                 onPress={() => {
-                  // TODO: Navigate to add objective screen
+                  router.push('/savings/add');
                 }}
               >
                 <View className="flex flex-row items-center gap-2">
@@ -239,7 +239,7 @@ export default function SavingsScreen() {
               <Button
                 className="bg-white border border-[#007C82] text-[#007C82] rounded-xl h-10 px-4 py-2"
                 onPress={() => {
-                  // TODO: Navigate to create objective screen
+                  router.push('/savings/add');
                 }}
               >
                 <P className="text-[#007C82] font-medium text-sm">Créer un objectif</P>
