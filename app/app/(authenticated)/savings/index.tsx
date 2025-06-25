@@ -3,6 +3,7 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { H1, H3, H4, P, Small } from "@/components/ui/typography";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import colors from "@/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, View, Text } from "react-native";
@@ -17,48 +18,66 @@ import {
   PiggyBankIcon
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/constants/api-client";
+
+type SavingsObjective = {
+  id: number;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  targetDate: string | null;
+  description: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  completed: boolean;
+  remainingAmount: number;
+  progressPercentage: number;
+};
 
 export default function SavingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const totalSaved = 1617;
-  const progression = 46;
-  const monthlyEvolution = 12;
+  const { data: objectives, isPending } = useQuery<SavingsObjective[]>({
+    queryKey: ['savings-objectives'],
+    queryFn: async () => {
+      const response = await api.get('/me/savings-objectives');
+      return response.data;
+    },
+  });
+
+  const totalSaved = objectives?.reduce((sum, obj) => sum + obj.currentAmount, 0) || 0;
+  const totalTarget = objectives?.reduce((sum, obj) => sum + obj.targetAmount, 0) || 0;
+  const progression = totalTarget > 0 ? Math.round((totalSaved / totalTarget) * 100) : 0;
+  const monthlyEvolution = 12; // TODO: Calculer l'évolution mensuelle réelle
   const monthlyIncome = 2500;
   const monthlyExpenses = 1800;
   const availableToSave = 700;
   const currentMonthlySaving = 350;
 
-  const objectives = [
-    {
-      id: 1,
-      label: "Vacances d'été",
-      icon: "🏖️",
-      date: "Juillet 2024",
-      saved: 847,
-      target: 1200,
-      monthly: 120,
-    },
-    {
-      id: 2,
-      label: "Nouveau téléphone",
-      icon: "📱",
-      date: "Mars 2024",
-      saved: 320,
-      target: 800,
-      monthly: 80,
-    },
-    {
-      id: 3,
-      label: "Permis de conduire",
-      icon: "🚗",
-      date: "Juin 2024",
-      saved: 450,
-      target: 1500,
-      monthly: 150,
-    },
-  ];
+  const getObjectiveIcon = (name: string) => {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('vacance') || lowerName.includes('été') || lowerName.includes('voyage')) return '🏖️';
+    if (lowerName.includes('téléphone') || lowerName.includes('phone') || lowerName.includes('mobile')) return '📱';
+    if (lowerName.includes('voiture') || lowerName.includes('permis') || lowerName.includes('conduire')) return '🚗';
+    if (lowerName.includes('maison') || lowerName.includes('appartement') || lowerName.includes('immobilier')) return '🏠';
+    if (lowerName.includes('études') || lowerName.includes('formation') || lowerName.includes('école')) return '🎓';
+    if (lowerName.includes('mariage') || lowerName.includes('noces')) return '💒';
+    if (lowerName.includes('retraite') || lowerName.includes('pension')) return '👴';
+    return '💰';
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const months = [
+      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    ];
+    return `${months[date.getMonth()]} ${date.getFullYear()}`;
+  };
 
   return (
     <ScrollView style={{ flex: 1 }} className="bg-gray-50">
@@ -84,7 +103,6 @@ export default function SavingsScreen() {
                 </View>
               </View>
 
-              {/* Stats & card */}
               <Card className="bg-white/10 backdrop-blur-md border-0 text-white rounded-2xl shadow-2xl">
                 <View className="p-2">
                   <View className="flex flex-row gap-6">
@@ -171,20 +189,29 @@ export default function SavingsScreen() {
               </Button>
             </View>
 
-            {objectives.map(obj => {
-              const percent = Math.round((obj.saved / obj.target) * 100);
+            {isPending && (
+              [...Array(3)].map((_, index) => (
+                <Skeleton key={index} className="h-32 w-full rounded-2xl" />
+              ))
+            )}
+
+            {(!isPending && objectives) && objectives.map(obj => {
+              const percent = Math.round(obj.progressPercentage);
+              const formattedDate = formatDate(obj.targetDate);
               return (
                 <Card key={obj.id} className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-6">
                   <View className="p-0">
                     <View className="flex flex-row items-start justify-between mb-4">
                       <View className="flex flex-row items-center gap-4">
-                        <Text className="text-3xl">{obj.icon}</Text>
+                        <Text className="text-3xl">{getObjectiveIcon(obj.name)}</Text>
                         <View>
-                          <H4 className="text-lg font-bold text-gray-900">{obj.label}</H4>
-                          <View className="flex flex-row items-center gap-2">
-                            <CalendarIcon size={16} color="#64748b" />
-                            <Small className="text-gray-600">{obj.date}</Small>
-                          </View>
+                          <H4 className="text-lg font-bold text-gray-900">{obj.name}</H4>
+                          {formattedDate && (
+                            <View className="flex flex-row items-center gap-2">
+                              <CalendarIcon size={16} color="#64748b" />
+                              <Small className="text-gray-600">{formattedDate}</Small>
+                            </View>
+                          )}
                         </View>
                       </View>
                       <Button
@@ -202,7 +229,7 @@ export default function SavingsScreen() {
 
                     <View className="mb-4">
                       <View className="flex flex-row items-center justify-between mb-2">
-                        <H3 className="text-2xl font-bold text-gray-900">{obj.saved}€ / {obj.target}€</H3>
+                        <H3 className="text-2xl font-bold text-gray-900">{obj.currentAmount}€ / {obj.targetAmount}€</H3>
                         <Small className="text-[#007C82] font-semibold">{percent}%</Small>
                       </View>
                       <Progress
@@ -211,8 +238,10 @@ export default function SavingsScreen() {
                         indicatorClassName="bg-[#25378d] rounded-full"
                       />
                       <View className="flex flex-row items-center justify-between text-sm">
-                        <Small className="text-gray-600">Plus que {obj.target - obj.saved}€</Small>
-                        <Small className="text-gray-600">{obj.monthly}€/mois</Small>
+                        <Small className="text-gray-600">Plus que {obj.remainingAmount}€</Small>
+                        <Small className="text-gray-600">
+                          {obj.completed ? 'Objectif atteint !' : `${Math.round(obj.targetAmount / 12)}€/mois`}
+                        </Small>
                       </View>
                     </View>
                   </View>
