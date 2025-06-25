@@ -1,7 +1,7 @@
 import { Button, LoadingButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardTitle } from "@/components/ui/card";
-import { H1, H3, P } from "@/components/ui/typography";
+import { H1, H3, P, Small } from "@/components/ui/typography";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -112,7 +112,7 @@ export default function AddSavingsObjectiveScreen() {
 
           <Card className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
             <View className="p-0">
-              <Text className="text-lg font-semibold text-gray-700 mt-0 mb-3 block">Nom de l'objectif</Text>
+              <H3 className="text-gray-700 mb-3 mt-0">Nom de l'objectif</H3>
               <Input
                 value={objective.name}
                 onChangeText={(text) => setObjective(prev => ({ ...prev, name: text }))}
@@ -125,7 +125,7 @@ export default function AddSavingsObjectiveScreen() {
 
           <Card className="bg-white rounded-2xl shadow-lg border border-gray-200 mt-6">
             <View className="p-0">
-              <Text className="text-lg font-semibold text-gray-700 mt-0 mb-3 block">Montant objectif</Text>
+              <H3 className="text-gray-700 mb-3 mt-0">Montant de l'objectif</H3>
               <View className="relative">
                 <Input
                   keyboardType="numeric"
@@ -136,7 +136,7 @@ export default function AddSavingsObjectiveScreen() {
                   style={{ fontSize: 18 }}
                 />
                 <View className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <Text className="text-gray-500 font-medium">€</Text>
+                  <Small className="text-gray-500 font-medium">€</Small>
                 </View>
               </View>
             </View>
