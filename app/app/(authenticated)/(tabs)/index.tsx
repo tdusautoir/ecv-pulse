@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StarIcon, TrendingUpIcon } from "lucide-react-native";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import Transactions from "../../components/dashboard/transactions";
+import Transactions from "../../../components/dashboard/transactions";
 import colors from "@/constants/colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
