@@ -1,7 +1,7 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import { CircleQuestionMarkIcon, HouseIcon, LucideIcon, SendIcon } from 'lucide-react-native';
+import { ChartColumnIcon, CircleQuestionMarkIcon, HouseIcon, LucideIcon, SendIcon } from 'lucide-react-native';
 import { Small } from './ui/typography';
 import { cn } from '@/lib/utils';
 import colors from '@/constants/colors';
@@ -15,6 +15,10 @@ const useRoute = (name: string): { icon: LucideIcon } => {
         case 'payment':
             return { icon: SendIcon }
 
+        case 'budget': {
+            return { icon: ChartColumnIcon }
+        }
+
         default:
             return { icon: CircleQuestionMarkIcon }
     }
@@ -22,7 +26,6 @@ const useRoute = (name: string): { icon: LucideIcon } => {
 
 export default function TabBar({ state, navigation, descriptors }: BottomTabBarProps) {
     const router = useRouter();
-    const routes = [state.routes[0], { key: 'payment-modal', name: 'payment' }, ...state.routes.slice(1)];
 
     return (
         <View className='flex flex-row items-center justify-around bg-background rounded-t-xl' style={{
@@ -34,7 +37,7 @@ export default function TabBar({ state, navigation, descriptors }: BottomTabBarP
             shadowOpacity: 0.10,
             shadowRadius: 12,
         }}>
-            {routes.map((route, index) => {
+            {state.routes.map((route, index) => {
                 const routeInfo = useRoute(route.name);
 
                 if (route.key === 'payment-modal') {
@@ -84,7 +87,6 @@ export default function TabBar({ state, navigation, descriptors }: BottomTabBarP
                     <TouchableOpacity
                         key={route.key}
                         className={cn('flex flex-col items-center gap-1 m-2 rounded-xl p-3', isFocused && 'bg-secondary/50')}
-                        // href={{ pathname: buildHref(route.name, route.params)! }}
                         accessibilityState={isFocused ? { selected: true } : {}}
                         accessibilityLabel={options.tabBarAccessibilityLabel}
                         testID={options.tabBarButtonTestID}
@@ -96,6 +98,13 @@ export default function TabBar({ state, navigation, descriptors }: BottomTabBarP
                     </TouchableOpacity>
                 );
             })}
+            <TouchableOpacity
+                onPress={() => router.push('/(authenticated)/modals/payment')}
+                className={cn('flex flex-col items-center gap-1 m-2 rounded-xl p-3')}
+                style={{ flex: 1 }}>
+                <SendIcon size={22} color={'#384252'} />
+                <Small>Payer</Small>
+            </TouchableOpacity>
         </View>
     );
 }

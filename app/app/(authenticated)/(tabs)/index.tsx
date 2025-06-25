@@ -18,7 +18,7 @@ export default function Dashboard() {
 
     return (
         <ScrollView style={{ flex: 1 }} className="bg-background">
-            <View className="flex flex-col gap-8 items-center">
+            <View className="flex flex-col gap-8 items-center pb-8">
                 <View className="w-full relative rounded-b-3xl overflow-hidden">
                     <LinearGradient
                         colors={[colors.primary, colors.tertiary]}

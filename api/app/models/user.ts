@@ -80,7 +80,6 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
     const result = await Transaction.query()
       .where('senderId', this.id)
-      .andWhereNotNull('category')
       .andWhereBetween('createdAt', [startOfMonth.toSQL()!, endOfMonth.toSQL()!])
       .sum('amount as total')
 

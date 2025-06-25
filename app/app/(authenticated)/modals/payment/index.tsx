@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "expo-router";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CircleXIcon } from "lucide-react-native";
+import { useAuth } from "@/context/auth-context";
 
 export default function PaymentScreen() {
     const [amount, setAmount] = useState<string>('');
@@ -20,6 +21,7 @@ export default function PaymentScreen() {
     const disabled = amount.trim() === '' || selectedContact === null;
     const router = useRouter();
     const queryClient = useQueryClient();
+    const { refetchUser } = useAuth();
 
     const contactsQuery = useQuery<{ data: Contact[] }>({
         queryKey: ['contacts'],
@@ -60,11 +62,13 @@ export default function PaymentScreen() {
                 message: message.trim() !== '' ? message : undefined,
                 receiverId: selectedContact.id
             })
-
-            queryClient.invalidateQueries({ queryKey: ['profile'] })
-            await queryClient.refetchQueries({ queryKey: ['profile', 'transactions'] })
         },
-        onSuccess: () => router.back(),
+        onSuccess: async () => {
+            refetchUser();
+            await new Promise(resolve => setTimeout(resolve, 600));
+            await queryClient.refetchQueries({ queryKey: ['profile'] })
+            router.back()
+        },
         onError: () => setError(true),
         onMutate: () => setError(false)
     })
