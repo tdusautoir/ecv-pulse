@@ -122,8 +122,6 @@ export default class SavingsObjectivesController {
     const payload = await addToSavingsValidator.validate(data)
     const trx = await db.transaction()
 
-    console.log(request.param('id'))
-
     try {
       const transaction = await createSavingTransaction(
         {

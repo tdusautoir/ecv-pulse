@@ -40,6 +40,8 @@ export default class AuthController {
 
     // Get additional user statistics
     const currentMonthSpent = await user.getCurrentMonthSpent()
+    const currentMonthGain = await user.getCurrentMonthGain()
+    const currentMonthGainSpentDiff = await user.getCurrentMonthGainSpentDiff()
     const spendingByCategory = await user.getCurrentMonthSpendingByCategory()
 
     return {
@@ -55,6 +57,8 @@ export default class AuthController {
       updatedAt: user.updatedAt,
       stats: {
         currentMonthSpent,
+        currentMonthGain,
+        currentMonthGainSpentDiff,
         spendingByCategory,
       },
     }

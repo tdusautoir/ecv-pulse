@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { H3, H4, P } from "@/components/ui/typography";
 import { useState } from "react";
 import { Text } from "@/components/ui/text";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/constants/api-client";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "expo-router";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CircleXIcon } from "lucide-react-native";
+import { useAuth } from "@/context/auth-context";
 
 export default function PaymentScreen() {
     const [amount, setAmount] = useState<string>('');
@@ -20,13 +21,16 @@ export default function PaymentScreen() {
     const disabled = amount.trim() === '' || selectedContact === null;
     const router = useRouter();
     const queryClient = useQueryClient();
+    const { refetchUser } = useAuth();
 
     const contactsQuery = useQuery<{ data: Contact[] }>({
-        queryKey: ['contact'],
+        queryKey: ['contacts'],
         queryFn: () => api.get('/me/contacts')
     })
 
     const handleAmountChange = (text: string) => {
+        if (text.trim() === '') setAmount('')
+
         let cleanedValue = text.replace(/[^0-9.,]/g, '');
 
         // Replace comma with dot for standard float parsing
@@ -58,18 +62,19 @@ export default function PaymentScreen() {
                 message: message.trim() !== '' ? message : undefined,
                 receiverId: selectedContact.id
             })
-
-            queryClient.invalidateQueries({ queryKey: ['profile'] })
-            await queryClient.refetchQueries({ queryKey: ['profile', 'transactions'] })
         },
-        onSuccess: () => router.back(),
+        onSuccess: async () => {
+            refetchUser();
+            await new Promise(resolve => setTimeout(resolve, 600));
+            await queryClient.refetchQueries({ queryKey: ['profile'] })
+            router.back()
+        },
         onError: () => setError(true),
         onMutate: () => setError(false)
     })
 
     return (
-        <View style={{ flex: 1 }} className="px-6 py-8 flex flex-col gap-8 bg-white">
-            <H3>Enovyer de l'argent</H3>
+        <View style={{ flex: 1 }} className="bg-white flex flex-col gap-8">
             {error && (
                 <Alert variant="destructive" icon={CircleXIcon}>
                     <AlertTitle>Erreur</AlertTitle>
@@ -110,18 +115,21 @@ export default function PaymentScreen() {
                                 })
                             }}
                             className={cn("bg-muted text-muted-foreground border-0", contact.id === selectedContact?.id && 'bg-primary')}>
-                            <Text className={cn(contact.id === selectedContact?.id && 'text-white')}>{contact.fullName.split(' ')[0]}</Text></Button>
+                            <Text className={cn(contact.id === selectedContact?.id && 'text-white')}>{contact.nickname ?? contact.fullName?.split(' ')[0] ?? contact.phoneNumber}</Text></Button>
                         )}
                     </View>
                 )}
+                <TouchableOpacity
+                    onPress={() => router.push('/(authenticated)/modals/payment/contacts')}
+                    className="w-full border-dashed border border-gray-400 p-3 text-center rounded-xl"
+                ><Text className="text-center">Ajouter un contact</Text></TouchableOpacity>
             </View>
             <View className="flex flex-col gap-4">
                 <Label className='text-2xl'>Message (optionel)</Label>
                 <Input onChangeText={setMessage} placeholder="Merci pour le café" />
             </View>
-
             <LoadingButton disabled={disabled} onPress={() => mutation.mutate()} loading={mutation.isPending}>
-                {disabled ? <Text>Envoyer</Text> : <Text>Envoyer {amount} € à {selectedContact?.fullName.split(' ')[0]}</Text>}
+                {disabled ? <Text>Envoyer</Text> : <Text>Envoyer {amount} € à {selectedContact.nickname ?? selectedContact.fullName?.split(' ')[0] ?? selectedContact.phoneNumber}</Text>}
             </LoadingButton>
         </View>
     )
