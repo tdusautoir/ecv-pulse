@@ -2,6 +2,8 @@
 
 **A payment and budget management application for young adults**
 
+![CIC Pulse App Icon](app/assets/logo-pulse.png)
+
 ## Project Context
 
 This is a **school project** simulating a response to a call for tender from CIC bank. The objective was to build a **Proof of Concept (POC)** within one week to demonstrate the feasibility of the proposed solution.
@@ -85,3 +87,11 @@ You can now login with those credentials:
 
 - **Email**: user@example.com
 - **Password**: your-secret-password
+
+## App Screenshots
+
+![Login Screen](screenshots/login.jpeg)
+![Dashboard](screenshots/dashboard.png)
+![Payment Flow](screenshots/payment.png)
+![Budget Management](screenshots/budget.png)
+![Savings Objectives](screenshots/savings.png)
