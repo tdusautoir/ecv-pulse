@@ -2,7 +2,7 @@
 
 **A payment and budget management application for young adults**
 
-![CIC Pulse App Icon](app/assets/logo-pulse.png)
+<img src="app/assets/logo-pulse.png" width="200" alt="CIC Pulse App Icon">
 
 ## Project Context
 
@@ -90,8 +90,8 @@ You can now login with those credentials:
 
 ## App Screenshots
 
-![Login Screen](screenshots/login.jpeg)
-![Dashboard](screenshots/dashboard.png)
-![Payment Flow](screenshots/payment.png)
-![Budget Management](screenshots/budget.png)
-![Savings Objectives](screenshots/savings.png)
+<img src="screenshots/login.jpeg" width="300" alt="Login Screen">
+<img src="screenshots/dashboard.png" width="300" alt="Dashboard">
+<img src="screenshots/payment.png" width="300" alt="Payment Flow">
+<img src="screenshots/budget.png" width="300" alt="Budget Management">
+<img src="screenshots/savings.png" width="300" alt="Savings Objectives">
