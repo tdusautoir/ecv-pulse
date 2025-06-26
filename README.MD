@@ -1,4 +1,4 @@
-# CIC Pulse
+# CIC Pulse 👨🏼‍💻
 
 **A payment and budget management application for young adults**
 
