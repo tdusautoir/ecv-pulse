@@ -25,10 +25,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "bundler": "metro",
+      "server": "server"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9b094e29-bcb0-4d99-a345-27b6415c84bd"
+      }
+    }
   }
 }
